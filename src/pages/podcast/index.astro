@@ -1,0 +1,9 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Podcast — Adrian" description="Technical conversations, ideas, and experiments from Adrian.">
+<section class="page"><div class="eyebrow">/ podcast</div><h1>Ideas worth<br/><em>hearing.</em></h1><p class="intro">Conversations, technical deep dives, and thoughts around machine learning, AI, systems, and building things.</p><div id="episodes" class="episodes"><div class="loading">Loading episodes…</div></div></section>
+</Layout>
+<script>const api='https://api.adrxor.me';const root=document.querySelector('#episodes');const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));fetch(api+'/api/podcast').then(r=>r.ok?r.json():Promise.reject()).then(d=>{root.innerHTML=d.items?.length?d.items.map(x=>`<article><div class="meta">${esc(x.episode||'EPISODE')} · ${esc(x.created_at||'')}</div><h2>${esc(x.title)}</h2><p>${esc(x.description||'')}</p><audio controls preload="none" src="${api}${x.file_url}"></audio></article>`).join(''):'<div class="loading">No episodes published yet.</div>'}).catch(()=>{root.innerHTML='<div class="loading">Episodes are temporarily unavailable.</div>'});</script>
+<style>.page{padding:110px 0 130px}.page>h1{font-size:clamp(58px,8vw,100px);line-height:.9;letter-spacing:-.065em;margin:20px 0 35px}.page h1 em{font-style:normal;color:var(--lime)}.intro{max-width:680px;color:#aeb4ad;font-size:18px;line-height:1.7}.episodes{margin-top:70px;max-width:900px;border-top:1px solid var(--line)}.episodes article{padding:32px 0;border-bottom:1px solid var(--line)}.meta{font:10px 'JetBrains Mono';color:var(--lime)}.episodes h2{font-size:30px;letter-spacing:-.04em;margin:18px 0 10px}.episodes p{color:#929a92;line-height:1.7;max-width:700px}.episodes audio{width:100%;margin-top:15px}.loading{padding:25px 0;color:#777f77;font:11px 'JetBrains Mono'}
+</style>

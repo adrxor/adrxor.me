@@ -1,0 +1,51 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Admin — Adrian" description="Private content management panel.">
+  <section class="admin">
+    <div class="eyebrow">/ private control room</div>
+    <div class="head"><div><h1>Content <em>control.</em></h1><p>Publish research, write posts, and manage your podcast from one small dashboard.</p></div><a href="/">← public site</a></div>
+
+    <div class="auth card">
+      <div><span class="label">ACCESS</span><h2>Admin credentials</h2><p>Credentials are sent to your Cloudflare Worker over HTTPS; a temporary Basic Auth token is kept in this browser session.</p></div>
+      <div class="authgrid"><input id="user" placeholder="username" autocomplete="username"><input id="pass" type="password" placeholder="password" autocomplete="current-password"><button id="saveAuth">Unlock</button></div>
+      <div id="authStatus" class="statusline">Locked.</div>
+    </div>
+
+    <div class="tabs"><button class="tab active" data-tab="research">Research</button><button class="tab" data-tab="blog">Blog</button><button class="tab" data-tab="podcast">Podcast</button></div>
+
+    <section id="research" class="panel active">
+      <div class="card"><span class="label">01 · RESEARCH</span><h2>Upload a research file</h2><p class="hint">PDF only. The file is stored in Cloudflare R2; the metadata goes into D1.</p>
+        <form id="researchForm"><input name="title" required placeholder="Research title"><input name="slug" placeholder="slug (optional)"><textarea name="description" rows="4" placeholder="Short description"></textarea><input name="tags" placeholder="tags, separated by commas"><label class="file"><input name="file" type="file" accept="application/pdf" required><span>Choose PDF</span></label><button type="submit">Upload & publish ↗</button></form><div id="researchMsg" class="msg"></div>
+      </div>
+      <div class="card"><div class="row"><div><span class="label">PUBLISHED</span><h2>Research library</h2></div><button id="refreshResearch" class="ghost">Refresh</button></div><div id="researchList" class="list"></div></div>
+    </section>
+
+    <section id="blog" class="panel">
+      <div class="card"><span class="label">02 · BLOG</span><h2>Write a field note</h2><form id="blogForm"><input name="title" required placeholder="Post title"><input name="slug" placeholder="slug (optional)"><input name="excerpt" placeholder="One-line excerpt"><input name="tags" placeholder="tags, separated by commas"><textarea name="content" rows="14" required placeholder="Write your post here... Markdown is supported by the API data model."></textarea><label class="check"><input name="published" type="checkbox" checked> Publish immediately</label><button type="submit">Publish post ↗</button></form><div id="blogMsg" class="msg"></div></div>
+      <div class="card"><div class="row"><div><span class="label">PUBLISHED</span><h2>Blog posts</h2></div><button id="refreshPosts" class="ghost">Refresh</button></div><div id="postList" class="list"></div></div>
+    </section>
+
+    <section id="podcast" class="panel">
+      <div class="card"><span class="label">03 · PODCAST</span><h2>Upload an episode</h2><p class="hint">MP3, M4A, or WAV. Same storage system as research.</p><form id="podcastForm"><input name="title" required placeholder="Episode title"><input name="description" placeholder="Short description"><input name="episode" placeholder="Episode number"><label class="file"><input name="file" type="file" accept="audio/mpeg,audio/mp4,audio/wav,.mp3,.m4a,.wav" required><span>Choose audio</span></label><button type="submit">Upload & publish ↗</button></form><div id="podcastMsg" class="msg"></div></div>
+    </section>
+  </section>
+</Layout>
+<script>
+const state={auth:sessionStorage.getItem('adrxor_admin_auth')||'',api:'https://api.adrxor.me'};
+const $=s=>document.querySelector(s); const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function setMsg(el,text,ok=false){el.textContent=text;el.className='msg '+(ok?'ok':'err')}
+async function api(path,opt={}){opt.headers={...(opt.headers||{}),...(state.auth?{Authorization:'Basic '+state.auth}:{})}; const r=await fetch(state.api+path,opt); if(!r.ok) throw new Error((await r.text())||r.statusText); return r.status===204?null:r.json()}
+$('#saveAuth').onclick=async()=>{const u=$('#user').value.trim(),p=$('#pass').value; state.auth=btoa(`${u}:${p}`); try{await api('/api/health');sessionStorage.setItem('adrxor_admin_auth',state.auth);$('#authStatus').textContent='Unlocked.';$('#authStatus').className='statusline ok';loadResearch();loadPosts()}catch(e){state.auth='';$('#authStatus').textContent='Could not unlock. Check credentials or API URL.';$('#authStatus').className='statusline err'}};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#'+b.dataset.tab).classList.add('active')});
+async function loadResearch(){try{const d=await api('/api/research');$('#researchList').innerHTML=d.items.map(x=>`<div class="item"><div><strong>${esc(x.title)}</strong><small>${esc(x.created_at)} · ${esc((x.tags||[]).join(', '))}</small></div><a href="${esc(state.api+x.file_url)}" target="_blank">PDF ↗</a></div>`).join('')||'<div class="empty">No research yet.</div>'}catch(e){$('#researchList').innerHTML='<div class="empty">Unlock the panel first.</div>'}}
+async function loadPosts(){try{const d=await api('/api/posts');$('#postList').innerHTML=d.items.map(x=>`<div class="item"><div><strong>${esc(x.title)}</strong><small>${esc(x.published_at||x.created_at)} · ${esc((x.tags||[]).join(', '))}</small></div><span>${x.published?'LIVE':'DRAFT'}</span></div>`).join('')||'<div class="empty">No posts yet.</div>'}catch(e){$('#postList').innerHTML='<div class="empty">Unlock the panel first.</div>'}}
+$('#researchForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget);try{setMsg($('#researchMsg'),'Uploading…');await api('/api/research',{method:'POST',body:f});e.currentTarget.reset();setMsg($('#researchMsg'),'Published successfully.',true);loadResearch()}catch(x){setMsg($('#researchMsg'),x.message)}};
+$('#blogForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget);const body={title:f.get('title'),slug:f.get('slug'),excerpt:f.get('excerpt'),tags:String(f.get('tags')||'').split(',').map(x=>x.trim()).filter(Boolean),content:f.get('content'),published:f.get('published')==='on'};try{setMsg($('#blogMsg'),'Publishing…');await api('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});e.currentTarget.reset();setMsg($('#blogMsg'),'Published successfully.',true);loadPosts()}catch(x){setMsg($('#blogMsg'),x.message)}};
+$('#podcastForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget);try{setMsg($('#podcastMsg'),'Uploading…');await api('/api/podcast',{method:'POST',body:f});e.currentTarget.reset();setMsg($('#podcastMsg'),'Published successfully.',true)}catch(x){setMsg($('#podcastMsg'),x.message)}};
+$('#refreshResearch').onclick=loadResearch; $('#refreshPosts').onclick=loadPosts;
+if(state.auth){$('#authStatus').textContent='Saved session detected. Click Unlock to verify.'}
+</script>
+<style>
+.admin{padding:90px 0 130px}.head{display:flex;justify-content:space-between;gap:30px;align-items:end;border-bottom:1px solid var(--line);padding-bottom:42px;margin-bottom:28px}.head h1{font-size:clamp(52px,8vw,94px);line-height:.9;letter-spacing:-.065em;margin:18px 0}.head em{font-style:normal;color:var(--lime)}.head p,.hint{color:#929a92;line-height:1.7;max-width:650px}.head a{color:var(--lime);font:12px 'JetBrains Mono';text-decoration:none}.card{border:1px solid var(--line);background:linear-gradient(145deg,#121613,#0d100f);padding:28px;margin-bottom:18px}.label{font:10px 'JetBrains Mono';color:var(--lime);letter-spacing:.12em}.card h2{margin:10px 0 8px;font-size:28px;letter-spacing:-.04em}.authgrid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-top:18px}.tabs{display:flex;gap:8px;margin:28px 0 18px}.tab,.ghost{border:1px solid var(--line);background:#101310;color:#aeb4ad;padding:11px 16px;font:11px 'JetBrains Mono';cursor:pointer}.tab.active,.tab:hover,.ghost:hover{color:#0b0d0c;background:var(--lime);border-color:var(--lime)}.panel{display:none}.panel.active{display:block}form{display:grid;gap:11px;margin-top:22px}input,textarea{width:100%;border:1px solid var(--line);background:#0a0d0b;color:#f2f3ed;padding:14px 15px;font:14px 'DM Sans';outline:none}textarea{resize:vertical;line-height:1.6}input:focus,textarea:focus{border-color:#65705f}.file{border:1px dashed #414940;padding:18px;text-align:center;color:#929a92;cursor:pointer}.file input{display:none}.file span{font:11px 'JetBrains Mono'}.check{color:#929a92;font-size:13px}.check input{width:auto;margin-right:8px}button[type=submit]{border:0;background:var(--lime);color:#0b0d0c;padding:14px 18px;font:600 11px 'JetBrains Mono';cursor:pointer}.msg,.statusline{font:11px 'JetBrains Mono';margin-top:12px;color:#929a92}.ok{color:var(--lime)}.err{color:#ff8f8f}.row{display:flex;justify-content:space-between;align-items:center;gap:20px}.list{margin-top:20px;border-top:1px solid var(--line)}.item{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}.item strong{display:block}.item small,.item span{display:block;color:#777f77;font:10px 'JetBrains Mono';margin-top:5px}.item a{color:var(--lime);font:10px 'JetBrains Mono';text-decoration:none}.empty{padding:20px 0;color:#777f77;font:11px 'JetBrains Mono'}@media(max-width:700px){.admin{padding:65px 0}.head{display:block}.head a{display:inline-block;margin-top:20px}.authgrid{grid-template-columns:1fr}.row{align-items:start}.item{align-items:start;flex-direction:column;gap:8px}}
+</style>

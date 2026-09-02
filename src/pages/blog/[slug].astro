@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+export async function getStaticPaths(){ return []; }
+const { slug } = Astro.params;
+---
+<Layout title="Field Note — Adrian" description="A field note from Adrian's ML/AI engineering work.">
+<article class="post" id="post"><div class="loading">Loading field note…</div></article>
+</Layout>
+<script define:vars={{slug}}>
+const api='https://api.adrxor.me';const root=document.querySelector('#post');
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function md(s){return esc(s).replace(/^### (.*)$/gm,'<h3>$1</h3>').replace(/^## (.*)$/gm,'<h2>$1</h2>').replace(/^# (.*)$/gm,'<h1>$1</h1>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').split(/\n\n+/).map(x=>/^<h[123]>/.test(x.trim())?x:`<p>${x.replace(/\n/g,'<br>')}</p>`).join('');}
+fetch(api+'/api/posts').then(r=>r.ok?r.json():Promise.reject()).then(d=>{const p=d.items?.find(x=>x.slug===slug);if(!p){root.innerHTML='<div class="loading">Field note not found.</div>';return}root.innerHTML=`<div class="eyebrow">/ field note · ${esc(p.published_at||p.created_at||'')}</div><h1>${esc(p.title)}</h1>${p.excerpt?`<p class="intro">${esc(p.excerpt)}</p>`:''}<div class="body">${md(p.content)}</div>`}).catch(()=>{root.innerHTML='<div class="loading">Field note unavailable.</div>'});
+</script>
+<style>.post{max-width:800px;padding:110px 0 140px}.post h1{font-size:clamp(50px,7vw,80px);line-height:.95;letter-spacing:-.06em;margin:24px 0}.intro{font-size:21px;color:#aeb4ad;line-height:1.6}.body{margin-top:55px;color:#c4c9c2;font-size:17px;line-height:1.85}.body h1,.body h2,.body h3{color:#f2f3ed;line-height:1.15;margin:45px 0 18px}.body h2{font-size:32px}.body h3{font-size:24px}.body code{font:14px 'JetBrains Mono';color:var(--lime);background:#111512;padding:2px 6px}.loading{color:#777f77;font:11px 'JetBrains Mono'}
+</style>

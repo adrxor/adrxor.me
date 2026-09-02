@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Adrian — ML/AI Engineer" description="Adrian is an ML/AI Engineer building practical machine learning systems, data projects, and technical experiments.">
+  <section class="hero">
+    <div class="grid"></div>
+    <div class="hero-copy">
+      <div class="eyebrow">/ home / 2026</div>
+      <h1>ML/AI Engineer.<br/><em>Building what matters.</em></h1>
+      <p class="lead">I'm Adrian, an ML/AI Engineer focused on building practical machine learning systems, experimenting with data, and turning ideas into working projects. This is where I document the work behind them.</p>
+      <div class="actions"><a class="primary" href="/projects">Explore my work <span>↗</span></a><a class="secondary" href="/about">More about me</a></div>
+    </div>
+    <div class="terminal">
+      <div class="dots"><i></i><i></i><i></i><span>adrxor@localhost:~</span></div>
+      <div class="term-body">
+        <p><b>$</b> whoami</p><p class="out">adrian · ml/ai engineer</p>
+        <p><b>$</b> focus --now</p><p class="out">ml / ai / data / systems</p>
+        <p><b>$</b> approach</p><p class="out">build · experiment · measure · ship</p>
+        <p><b>$</b> status</p><p class="out lime">● building in public</p>
+        <p><b>$</b> _</p>
+      </div>
+    </div>
+  </section>
+  <section class="strip">
+    <div><span>01</span><b>Machine Learning</b><p>Models, data, evaluation, experiments.</p></div>
+    <div><span>02</span><b>AI Systems</b><p>Practical systems built around useful models.</p></div>
+    <div><span>03</span><b>Engineering</b><p>Linux, tooling, infrastructure, reliable code.</p></div>
+  </section>
+  <section class="feature">
+    <div><div class="eyebrow">featured project</div><h2>California<br/><em>House Price</em><br/>Prediction</h2></div>
+    <div class="feature-card"><span>ML / REGRESSION</span><p>A practical end-to-end machine learning project covering data preparation, feature engineering, model training, evaluation, and a reproducible workflow.</p><a href="/projects">View project →</a></div>
+  </section>
+</Layout>
+<style>.hero{min-height:650px;position:relative;display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:60px;overflow:hidden}.hero-copy{position:relative;z-index:1;padding:90px 0}.hero h1{font-size:clamp(52px,7.4vw,98px);line-height:.92;letter-spacing:-.065em;margin:20px 0 28px;font-weight:600}.hero h1 em,.feature h2 em{font-style:normal;color:var(--lime)}.lead{max-width:650px;color:#aeb4ad;font-size:18px;line-height:1.65}.actions{display:flex;gap:12px;margin-top:34px}.actions a{padding:13px 18px;border:1px solid var(--line);text-decoration:none;font-weight:600;font-size:14px}.primary{background:var(--lime);color:#0b0d0c;border-color:var(--lime)!important}.primary span{margin-left:18px}.secondary{color:#fff}.terminal{position:relative;z-index:1;border:1px solid var(--line);background:rgba(17,20,18,.88);box-shadow:0 25px 80px #0008;transform:rotate(1deg)}.dots{height:40px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 14px}.dots i{width:8px;height:8px;border-radius:50%;background:#505650}.dots span{font:11px 'JetBrains Mono';color:#656d65;margin-left:9px}.term-body{padding:24px;font:13px/2 'JetBrains Mono';color:#cfd4cc}.term-body p{margin:0}.term-body b{color:var(--lime)}.term-body .out{color:#788078;padding-left:18px}.term-body .lime{color:var(--lime)}.strip{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.strip>div{padding:28px;border-right:1px solid var(--line)}.strip>div:last-child{border:0}.strip span,.feature-card span{font:11px 'JetBrains Mono';color:var(--lime)}.strip b{display:block;margin:15px 0 7px;font-size:17px}.strip p{color:var(--muted);margin:0;font-size:14px}.feature{display:grid;grid-template-columns:1fr 1fr;gap:80px;padding:120px 0}.feature h2{font-size:clamp(46px,6vw,76px);line-height:.95;letter-spacing:-.05em;margin:18px 0}.feature-card{align-self:end;border:1px solid var(--line);padding:35px;background:linear-gradient(135deg,#111512,#0d100f)}.feature-card p{color:#aeb4ad;line-height:1.7;font-size:16px;margin:20px 0 30px}.feature-card a{color:var(--lime);text-decoration:none;font:500 13px 'JetBrains Mono'}@media(max-width:850px){.hero{grid-template-columns:1fr;padding-bottom:70px}.hero-copy{padding:80px 0 20px}.terminal{max-width:620px;width:100%}.feature{grid-template-columns:1fr;gap:20px}.strip{grid-template-columns:1fr}.strip>div{border-right:0;border-bottom:1px solid var(--line)}}
+</style>

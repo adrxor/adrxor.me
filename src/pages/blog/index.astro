@@ -1,0 +1,9 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Blog — Adrian" description="Field notes from Adrian's ML/AI engineering work, experiments, and technical rabbit holes.">
+<section class="page"><div class="eyebrow">/ field notes</div><h1>Build logs &<br/><em>thoughts.</em></h1><div id="posts" class="posts"><div class="loading">Loading field notes…</div></div></section>
+</Layout>
+<script>const api='https://api.adrxor.me';const root=document.querySelector('#posts');const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));fetch(api+'/api/posts').then(r=>r.ok?r.json():Promise.reject()).then(d=>{root.innerHTML=d.items?.length?d.items.map(p=>`<a href="/blog/${encodeURIComponent(p.slug)}"><time>${esc(p.published_at||p.created_at||'')}</time><h2>${esc(p.title)}</h2><span>Read →</span></a>`).join(''):'<div class="loading">No field notes published yet.</div>'}).catch(()=>{root.innerHTML='<div class="loading">Field notes are temporarily unavailable.</div>'});</script>
+<style>.page{padding:110px 0}.page>h1{font-size:clamp(55px,8vw,100px);line-height:.9;letter-spacing:-.06em;margin:20px 0 80px}.page h1 em{font-style:normal;color:var(--lime)}.posts{border-top:1px solid var(--line);max-width:900px}.posts a{display:grid;grid-template-columns:150px 1fr 90px;align-items:center;gap:20px;padding:28px 0;border-bottom:1px solid var(--line);text-decoration:none;color:#fff}.posts time,.posts span{font:11px 'JetBrains Mono';color:var(--muted)}.posts h2{font-size:22px;margin:0}.posts a:hover h2{color:var(--lime)}.loading{padding:25px 0;color:#777f77;font:11px 'JetBrains Mono'}@media(max-width:650px){.posts a{grid-template-columns:1fr}.posts span{display:none}}
+</style>
