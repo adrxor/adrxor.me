@@ -2,12 +2,8 @@ name = "adrxor-api"
 main = "src/index.js"
 compatibility_date = "2026-09-02"
 
-[[r2_buckets]]
-binding = "MEDIA"
-bucket_name = "adrxor-media"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "adrxor"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "da836168-99dc-47b1-9068-eb4b478f581d"
 migrations_dir = "migrations"

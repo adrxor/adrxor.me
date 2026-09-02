@@ -1,15 +1,19 @@
-# adrxor-api
+# adrxor API
 
-Cloudflare Worker backend for the adrxor.me admin panel. It stores research PDFs and podcast audio in R2 and content metadata/posts in D1.
+Cloudflare Worker + D1 backend for the personal site.
 
-## Setup
+## Current design
 
-1. Install Wrangler: `npm install`
-2. Create an R2 bucket named `adrxor-media`.
-3. Create a D1 database named `adrxor`; put its ID in `wrangler.toml`.
-4. Run `npx wrangler d1 migrations apply adrxor --remote`.
-5. Set secrets: `npx wrangler secret put ADMIN_USER` and `npx wrangler secret put ADMIN_PASS`.
-6. Deploy with `npx wrangler deploy`.
-7. Add `api.adrxor.me` as a Worker custom domain in Cloudflare.
+- D1 stores blog/research/podcast metadata.
+- Blog has full CRUD: create, edit, publish/unpublish, view and delete.
+- Research and podcast use public HTTPS file URLs rather than R2. This intentionally avoids Cloudflare R2 billing requirements.
+- Admin mutations require Basic Auth using Worker secrets `ADMIN_USER` and `ADMIN_PASS`.
 
-The current admin UI expects `https://api.adrxor.me`. Do not put the admin password in the Git repository.
+## Deploy
+
+```bash
+npx wrangler d1 migrations apply adrxor --remote
+npx wrangler deploy
+```
+
+Do not put admin credentials in source code.
